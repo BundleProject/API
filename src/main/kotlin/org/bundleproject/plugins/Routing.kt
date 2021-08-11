@@ -2,6 +2,7 @@ package org.bundleproject.plugins
 
 import io.ktor.routing.*
 import io.ktor.application.*
+import io.ktor.http.*
 import io.ktor.response.*
 import org.bundleproject.utils.fetchAssets
 import org.bundleproject.utils.resolveUrl
@@ -24,12 +25,14 @@ fun Application.configureRouting() {
                 ?.get(minecraftVersion)
                 ?.get(version)
                 ?: return@get call.respond(
+                    HttpStatusCode.NotFound,
                     mapOf(
                         "success" to false,
                         "error" to "Invalid mod"
                     )
                 )
             call.respond(
+                HttpStatusCode.OK,
                 mapOf(
                     "success" to true,
                     "data" to mapOf(
