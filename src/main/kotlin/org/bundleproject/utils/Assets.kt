@@ -10,7 +10,8 @@ suspend fun resolveUrl(urlData: ModVersion): String {
     return when (urlData.source) {
         ModSource.DIRECT -> urlData.ref
         ModSource.GITHUB -> {
-            val releases =
+//            val releases =
+            TODO()
         }
         ModSource.MODRINTH -> TODO()
         ModSource.CURSEFORGE -> TODO()
