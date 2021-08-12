@@ -5,6 +5,8 @@ import io.ktor.client.engine.apache.*
 import io.ktor.client.features.json.*
 import io.ktor.http.*
 
+val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
+
 val httpClient = HttpClient(Apache) {
     install(JsonFeature) {
         serializer = GsonSerializer()
@@ -13,4 +15,5 @@ val httpClient = HttpClient(Apache) {
     }
 }
 const val assetsUrl = "https://raw.githubusercontent.com/TymanWasTaken/Assets/patch-1/assets/mods.json"
-const val githubApiUrl = "https://api.github.com/repos"
+const val githubApiUrl = "https://api.github.com"
+const val modrinthApiUrl = "https://api.modrinth.com/api/v1"

@@ -7,13 +7,12 @@ enum class ModSource {
     GITHUB,
     @SerializedName("modrinth")
     MODRINTH,
-    @SerializedName("curseforge")
-    CURSEFORGE,
     @SerializedName("direct")
     DIRECT
 }
 
 data class ModVersion(
     var source: ModSource,
-    val ref: String
+    val ref: String,
+    val id: String? // Used to skip a web request when resolving modrinth mods (completely optional though)
 )

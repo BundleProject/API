@@ -4,6 +4,7 @@ import io.ktor.routing.*
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
+import org.bundleproject.json.ModData
 import org.bundleproject.utils.fetchAssets
 import org.bundleproject.utils.resolveUrl
 
@@ -36,7 +37,13 @@ fun Application.configureRouting() {
                 mapOf(
                     "success" to true,
                     "data" to mapOf(
-                        "url" to resolveUrl(modData),
+                        "url" to resolveUrl(ModData(
+                            version = version,
+                            source = modData.source,
+                            ref = modData.ref,
+                            name = id,
+                            id = modData.id
+                        )),
                         "metadata" to mod.metadata
                     )
                 )
