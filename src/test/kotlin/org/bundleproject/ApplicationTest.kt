@@ -9,33 +9,36 @@ import org.bundleproject.json.assets.ModAssets
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.plugins.configureRouting
 import org.bundleproject.plugins.configureSerialization
+import org.bundleproject.utils.CannotFindTestModException
 import org.bundleproject.utils.fetchAssets
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
 class ApplicationTest {
+    private val gson = Gson()
+
+    private suspend fun getTestRoute(): String {
+        val assets = fetchAssets()
+        val id = assets.mods.keys.first()
+        val asset = assets.mods[id]
+        val platform = asset?.platforms?.keys?.first()
+        val mcVer = asset?.platforms?.get(platform)?.keys?.first()
+        val modVer = asset?.platforms?.get(platform)?.get(mcVer)?.keys?.first()
+            ?: throw CannotFindTestModException()
+        return "/v1/mods/$id/$platform/$mcVer/$modVer"
+    }
     @Test
     fun testMod() {
         withTestApplication({
             configureRouting()
             configureSerialization()
         }) {
-            var assets: ModAssets
-            runBlocking {
-                assets = fetchAssets()
-            }
-            val id = assets.mods.keys.first()
-            val asset = assets.mods[id]!!
-            val platform = asset.platforms.keys.first()
-            val mcVer = asset.platforms[platform]!!.keys.first()
-            val modVer = asset.platforms[platform]!![mcVer]!!.keys.first()
-            val url = "/v1/mods/$id/$platform/$mcVer/$modVer"
-            handleRequest(HttpMethod.Get, url) {
+            handleRequest(HttpMethod.Get, runBlocking { getTestRoute() }) {
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
             }.apply {
                 assertEquals(HttpStatusCode.OK, response.status())
                 assertEquals(ContentType.Application.Json.withCharset(Charsets.UTF_8), response.contentType())
-                Gson().fromJson(response.content, ModResponse::class.java)
+                gson.fromJson(response.content, ModResponse::class.java)
             }
         }
     }
@@ -46,17 +49,7 @@ class ApplicationTest {
             configureRouting()
             configureSerialization()
         }) {
-            var assets: ModAssets
-            runBlocking {
-                assets = fetchAssets()
-            }
-            val id = assets.mods.keys.first()
-            val asset = assets.mods[id]!!
-            val platform = asset.platforms.keys.first()
-            val mcVer = asset.platforms[platform]!!.keys.first()
-            val modVer = asset.platforms[platform]!![mcVer]!!.keys.first()
-            val url = "/v1/mods/$id/$platform/$mcVer/$modVer/download"
-            handleRequest(HttpMethod.Get, url).apply {
+            handleRequest(HttpMethod.Get, runBlocking { getTestRoute() } + "/download").apply {
                 assertEquals(HttpStatusCode.MovedPermanently, response.status())
             }
         }

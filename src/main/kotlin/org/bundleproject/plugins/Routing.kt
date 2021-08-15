@@ -10,6 +10,7 @@ import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.json.responses.ModResponseData
 import org.bundleproject.utils.ModNotFoundException
 import org.bundleproject.utils.fetchAssets
+import org.bundleproject.utils.getModFromCall
 import org.bundleproject.utils.resolveUrl
 
 fun Application.configureRouting() {
@@ -18,82 +19,23 @@ fun Application.configureRouting() {
             TODO("Send docs here")
         }
         get("/v1/mods/{id}/{platform}/{minecraftVersion}/{version}") {
-            val assets = fetchAssets()
-            val id = call.parameters["id"]!!
-            val platform = call.parameters["platform"]!!
-            val minecraftVersion = call.parameters["minecraftVersion"]!!
-            val version = call.parameters["version"]!!
-            val mod = assets.mods[id]
-            val modData = mod
-                ?.platforms
-                ?.get(platform)
-                ?.get(minecraftVersion)
-                ?.get(version)
-                ?: return@get call.respond(
-                    HttpStatusCode.NotFound,
-                    ErrorResponse(
-                        error = "Invalid mod"
+            val modData = getModFromCall(call)
+            call.respond(
+                HttpStatusCode.OK,
+                ModResponse(
+                    data = ModResponseData(
+                        url = resolveUrl(modData),
+                        metadata = modData.metadata
                     )
                 )
-            try {
-                call.respond(
-                    HttpStatusCode.OK,
-                    ModResponse(
-                        data = ModResponseData(
-                            url = resolveUrl(ModData(
-                                version = version,
-                                source = modData.source,
-                                ref = modData.ref,
-                                name = id,
-                                id = modData.id
-                            )),
-                            metadata = mod.metadata
-                        )
-                    )
-                )
-            } catch (ignored: ModNotFoundException) {
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    ErrorResponse(
-                        "Failed to fetch data url from source"
-                    )
-                )
-            }
+            )
         }
         get("/v1/mods/{id}/{platform}/{minecraftVersion}/{version}/download") {
-            val assets = fetchAssets()
-            val id = call.parameters["id"]!!
-            val platform = call.parameters["platform"]!!
-            val minecraftVersion = call.parameters["minecraftVersion"]!!
-            val version = call.parameters["version"]!!
-            val mod = assets.mods[id]
-            val modData = mod
-                ?.platforms
-                ?.get(platform)
-                ?.get(minecraftVersion)
-                ?.get(version)
-                ?: return@get call.respond(
-                    HttpStatusCode.NotFound,
-                    ErrorResponse(
-                        error = "Invalid mod"
-                    )
-                )
-            try {
-                call.respondRedirect(resolveUrl(ModData(
-                    version = version,
-                    source = modData.source,
-                    ref = modData.ref,
-                    name = id,
-                    id = modData.id
-                )), permanent = true)
-            } catch (ignored: ModNotFoundException) {
-                call.respond(
-                    HttpStatusCode.InternalServerError,
-                    ErrorResponse(
-                        error = "Failed to fetch download url from source"
-                    )
-                )
-            }
+            val modData = getModFromCall(call)
+            call.respondRedirect(
+                permanent = true,
+                url = resolveUrl(modData)
+            )
         }
     }
 }

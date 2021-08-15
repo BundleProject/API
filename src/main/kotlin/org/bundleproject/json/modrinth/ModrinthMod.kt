@@ -1,7 +1,5 @@
 package org.bundleproject.json.modrinth
 
-data class License(
+data class ModrinthMod(
     val id: String,
-    val name: String,
-    val url: String
 )
