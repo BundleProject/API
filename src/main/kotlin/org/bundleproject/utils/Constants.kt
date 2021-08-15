@@ -14,6 +14,6 @@ val httpClient = HttpClient(Apache) {
         acceptContentTypes += ContentType("text", "plain")
     }
 }
-const val assetsUrl = "https://raw.githubusercontent.com/TymanWasTaken/Assets/patch-1/assets/mods.json"
+const val assetsUrl = "https://raw.githubusercontent.com/BundleProject/Assets/main/assets/mods.json"
 const val githubApiUrl = "https://api.github.com"
 const val modrinthApiUrl = "https://api.modrinth.com/api/v1"

@@ -5,6 +5,9 @@ import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.response.*
 import org.bundleproject.json.ModData
+import org.bundleproject.json.responses.ErrorResponse
+import org.bundleproject.json.responses.ModResponse
+import org.bundleproject.json.responses.ModResponseData
 import org.bundleproject.utils.ModNotFoundException
 import org.bundleproject.utils.fetchAssets
 import org.bundleproject.utils.resolveUrl
@@ -28,34 +31,31 @@ fun Application.configureRouting() {
                 ?.get(version)
                 ?: return@get call.respond(
                     HttpStatusCode.NotFound,
-                    mapOf(
-                        "success" to false,
-                        "error" to "Invalid mod"
+                    ErrorResponse(
+                        error = "Invalid mod"
                     )
                 )
             try {
                 call.respond(
                     HttpStatusCode.OK,
-                    mapOf(
-                        "success" to true,
-                        "data" to mapOf(
-                            "url" to resolveUrl(ModData(
+                    ModResponse(
+                        data = ModResponseData(
+                            url = resolveUrl(ModData(
                                 version = version,
                                 source = modData.source,
                                 ref = modData.ref,
                                 name = id,
                                 id = modData.id
                             )),
-                            "metadata" to mod.metadata
+                            metadata = mod.metadata
                         )
                     )
                 )
             } catch (ignored: ModNotFoundException) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    mapOf(
-                        "success" to false,
-                        "error" to "Failed to fetch download url from source"
+                    ErrorResponse(
+                        "Failed to fetch data url from source"
                     )
                 )
             }
@@ -74,9 +74,8 @@ fun Application.configureRouting() {
                 ?.get(version)
                 ?: return@get call.respond(
                     HttpStatusCode.NotFound,
-                    mapOf(
-                        "success" to false,
-                        "error" to "Invalid mod"
+                    ErrorResponse(
+                        error = "Invalid mod"
                     )
                 )
             try {
@@ -90,9 +89,8 @@ fun Application.configureRouting() {
             } catch (ignored: ModNotFoundException) {
                 call.respond(
                     HttpStatusCode.InternalServerError,
-                    mapOf(
-                        "success" to false,
-                        "error" to "Failed to fetch download url from source"
+                    ErrorResponse(
+                        error = "Failed to fetch download url from source"
                     )
                 )
             }

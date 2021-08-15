@@ -1,20 +1,10 @@
 package org.bundleproject.json.assets
 
+typealias ModVersions = Map<String, ModData>
+typealias McVersions = Map<String, ModVersions>
+typealias ModPlatforms = Map<String, McVersions>
+
 data class ModAsset(
     val metadata: ModMetadata,
-    val platforms:
-    // Platform
-    Map<
-            String,
-            // MC Version
-            Map<
-                    String,
-                    // Mod version
-                    Map<
-                            String,
-                            ModVersion
-                    >
-            >
-    >
-    // TODO: Find a way to fix this ugliness (probably refactor assets again)
+    val platforms: ModPlatforms
 )

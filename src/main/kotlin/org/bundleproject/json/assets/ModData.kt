@@ -11,7 +11,7 @@ enum class ModSource {
     DIRECT
 }
 
-data class ModVersion(
+data class ModData(
     var source: ModSource,
     val ref: String,
     val id: String? // Used to skip a web request when resolving modrinth mods (completely optional though)
