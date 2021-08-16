@@ -10,12 +10,10 @@ import org.bundleproject.utils.ModNotFoundException
 fun Application.configureStatusPages() {
     install(StatusPages) {
         exception<ModNotFoundException> {
-             call.respond(
-                 HttpStatusCode.InternalServerError,
-                 ErrorResponse(
-                     error = "Unable to find mod"
-                 )
-             )
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                ErrorResponse(error = "Unable to find mod")
+            )
         }
     }
 }

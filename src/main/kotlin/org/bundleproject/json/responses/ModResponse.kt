@@ -1,6 +1,3 @@
 package org.bundleproject.json.responses
 
-data class ModResponse(
-    val success: Boolean = true,
-    val data: ModResponseData
-)
+data class ModResponse(val success: Boolean = true, val data: ModResponseData)

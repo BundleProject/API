@@ -10,17 +10,17 @@ import org.bundleproject.json.assets.ModSource
 import org.bundleproject.json.github.GithubReleases
 import org.bundleproject.json.modrinth.ModrinthMod
 import org.bundleproject.json.modrinth.ModrinthModVersions
-import org.bundleproject.json.responses.ErrorResponse
 
 suspend fun fetchAssets(): ModAssets = httpClient.get(assetsUrl)
+
 suspend fun resolveUrl(modData: ModData): String {
     return when (modData.source) {
         ModSource.DIRECT -> modData.ref
         ModSource.GITHUB -> {
-            val releases: GithubReleases = httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
-            releases.find {
-                it.tagName == modData.version
-            }?.assets?.get(0)?.browserDownloadUrl ?: throw ModNotFoundException()
+            val releases: GithubReleases =
+                httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
+            releases.find { it.tagName == modData.version }?.assets?.get(0)?.browserDownloadUrl
+                ?: throw ModNotFoundException()
         }
         ModSource.MODRINTH -> {
             var id = modData.id
@@ -28,13 +28,14 @@ suspend fun resolveUrl(modData: ModData): String {
                 val mod: ModrinthMod = httpClient.get("$modrinthApiUrl/mod/${modData.name}")
                 id = mod.id
             }
-            val modVersions: ModrinthModVersions = httpClient.get("$modrinthApiUrl/mod/${id}/version")
-            modVersions.find {
-                it.versionNumber == modData.version
-            }?.files?.get(0)?.url ?: throw ModNotFoundException()
+            val modVersions: ModrinthModVersions =
+                httpClient.get("$modrinthApiUrl/mod/${id}/version")
+            modVersions.find { it.versionNumber == modData.version }?.files?.get(0)?.url
+                ?: throw ModNotFoundException()
         }
     }
 }
+
 suspend fun getModFromCall(call: ApplicationCall): ModData {
     val assets = fetchAssets()
     val id = call.parameters["id"]!!
@@ -42,12 +43,9 @@ suspend fun getModFromCall(call: ApplicationCall): ModData {
     val minecraftVersion = call.parameters["minecraftVersion"]!!
     val version = call.parameters["version"]!!
     val mod = assets.mods[id]
-    val modData = mod
-        ?.platforms
-        ?.get(platform)
-        ?.get(minecraftVersion)
-        ?.get(version)
-        ?: throw ModNotFoundException()
+    val modData =
+        mod?.platforms?.get(platform)?.get(minecraftVersion)?.get(version)
+            ?: throw ModNotFoundException()
     return ModData(
         version = version,
         source = modData.source,
