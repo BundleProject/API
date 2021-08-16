@@ -7,7 +7,9 @@ import org.bundleproject.utils.port
 
 fun main() {
     embeddedServer(Netty, port = port, host = "0.0.0.0") {
-        configureRouting()
+        configureRateLimiting()
+        configureStatusPages()
         configureSerialization()
+        configureRouting()
     }.start(wait = true)
 }
