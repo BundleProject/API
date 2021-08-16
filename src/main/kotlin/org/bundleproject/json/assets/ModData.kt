@@ -11,6 +11,5 @@ enum class ModSource {
 data class ModData(
     var source: ModSource,
     val ref: String,
-    val id: String? // Used to skip a web request when resolving modrinth mods (completely optional
-// though)
+    val id: String? // Used to skip a web request when resolving modrinth mods (completely optional)
 )

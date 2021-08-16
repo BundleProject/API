@@ -8,8 +8,6 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.bundleproject.json.responses.ModResponse
-import org.bundleproject.plugins.configureRouting
-import org.bundleproject.plugins.configureSerialization
 import org.bundleproject.utils.CannotFindTestModException
 import org.bundleproject.utils.fetchAssets
 
@@ -29,10 +27,7 @@ class ApplicationTest {
     }
     @Test
     fun testMod() {
-        withTestApplication({
-            configureRouting()
-            configureSerialization()
-        }) {
+        withTestApplication({ configurePlugins() }) {
             handleRequest(HttpMethod.Get, runBlocking { getTestRoute() }) {
                 addHeader(HttpHeaders.Accept, ContentType.Application.Json.toString())
             }
@@ -49,10 +44,7 @@ class ApplicationTest {
 
     @Test
     fun testModDownload() {
-        withTestApplication({
-            configureRouting()
-            configureSerialization()
-        }) {
+        withTestApplication({ configurePlugins() }) {
             handleRequest(HttpMethod.Get, runBlocking { getTestRoute() } + "/download").apply {
                 assertEquals(HttpStatusCode.MovedPermanently, response.status())
             }

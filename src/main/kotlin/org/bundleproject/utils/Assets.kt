@@ -2,8 +2,6 @@ package org.bundleproject.utils
 
 import io.ktor.application.*
 import io.ktor.client.request.*
-import io.ktor.http.*
-import io.ktor.response.*
 import org.bundleproject.json.ModData
 import org.bundleproject.json.assets.ModAssets
 import org.bundleproject.json.assets.ModSource
@@ -19,7 +17,7 @@ suspend fun resolveUrl(modData: ModData): String {
         ModSource.GITHUB -> {
             val releases: GithubReleases =
                 httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
-            releases.find { it.tagName == modData.version }?.assets?.get(0)?.browserDownloadUrl
+            releases.find { it.tagName == modData.version }?.assets?.getOrNull(0)?.browserDownloadUrl
                 ?: throw ModNotFoundException()
         }
         ModSource.MODRINTH -> {
@@ -30,7 +28,7 @@ suspend fun resolveUrl(modData: ModData): String {
             }
             val modVersions: ModrinthModVersions =
                 httpClient.get("$modrinthApiUrl/mod/${id}/version")
-            modVersions.find { it.versionNumber == modData.version }?.files?.get(0)?.url
+            modVersions.find { it.versionNumber == modData.version }?.files?.getOrNull(0)?.url
                 ?: throw ModNotFoundException()
         }
     }
