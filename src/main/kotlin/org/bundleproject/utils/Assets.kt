@@ -2,14 +2,44 @@ package org.bundleproject.utils
 
 import io.ktor.application.*
 import io.ktor.client.request.*
+import java.util.*
 import org.bundleproject.json.ModData
 import org.bundleproject.json.assets.ModAssets
 import org.bundleproject.json.assets.ModSource
+import org.bundleproject.json.github.GithubCommit
 import org.bundleproject.json.github.GithubReleases
 import org.bundleproject.json.modrinth.ModrinthMod
 import org.bundleproject.json.modrinth.ModrinthModVersions
 
-suspend fun fetchAssets(): ModAssets = httpClient.get(assetsUrl)
+object AssetsCache {
+    private var lastUpdated: Date? = null
+    private var cached: ModAssets? = null
+
+    private suspend fun fetchAssets(): ModAssets {
+        val (
+            latestCommitId
+        ) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)
+        return httpClient.get(getAssetsUrl(latestCommitId))
+    }
+
+    suspend fun getAssets(): ModAssets {
+        // Save to local variables for null safety
+        val cached = cached
+        val lastUpdated = lastUpdated
+        if (cached == null || lastUpdated == null) {
+            val fetched = fetchAssets()
+            this.cached = fetched
+            this.lastUpdated = Date()
+            return fetched
+        }
+        return if (Date().time - lastUpdated.time >= 5 * 60 * 1000) {
+            this.cached = fetchAssets()
+            this.cached!!
+        } else {
+            this.cached!!
+        }
+    }
+}
 
 suspend fun resolveUrl(modData: ModData): String {
     return when (modData.source) {
@@ -17,7 +47,11 @@ suspend fun resolveUrl(modData: ModData): String {
         ModSource.GITHUB -> {
             val releases: GithubReleases =
                 httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
-            releases.find { it.tagName == modData.version }?.assets?.getOrNull(0)?.browserDownloadUrl
+            releases
+                .find { it.tagName == modData.version || it.tagName == "v${modData.version}" }
+                ?.assets
+                ?.getOrNull(0)
+                ?.browserDownloadUrl
                 ?: throw ModNotFoundException()
         }
         ModSource.MODRINTH -> {
@@ -35,7 +69,7 @@ suspend fun resolveUrl(modData: ModData): String {
 }
 
 suspend fun getModFromCall(call: ApplicationCall): ModData {
-    val assets = fetchAssets()
+    val assets = AssetsCache.getAssets()
     val id = call.parameters["id"]!!
     val platform = call.parameters["platform"]!!
     val minecraftVersion = call.parameters["minecraftVersion"]!!

@@ -8,5 +8,5 @@ import io.ktor.response.*
 import io.ktor.routing.*
 
 fun Application.configureSerialization() {
-    install(ContentNegotiation) { gson {} }
+    install(ContentNegotiation) { gson() }
 }
