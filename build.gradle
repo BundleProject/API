@@ -1,21 +1,46 @@
 plugins {
-    id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.5.21'
+    id 'com.github.johnrengelman.shadow' version '7.0.0'
+    id 'com.ncorti.ktfmt.gradle' version '0.6.0'
+}
+
+ktfmt {
+    kotlinLangStyle()
 }
 
 group "org.bundleproject"
 version "0.0.1"
-mainClassName = "org.bundleproject.ApplicationKt"
 
 repositories {
     mavenCentral()
+    maven { url "https://jitpack.io" }
 }
 
+String ktor_version = "1.6.3"
+
 dependencies {
+    implementation 'guru.zoroark:ktor-rate-limit:0.0.1'
     implementation "io.ktor:ktor-server-core:$ktor_version"
+    implementation "io.ktor:ktor-client-core:$ktor_version"
+    implementation "io.ktor:ktor-client-apache:$ktor_version"
     implementation "io.ktor:ktor-gson:$ktor_version"
+    implementation "io.ktor:ktor-client-gson:$ktor_version"
+    implementation "io.ktor:ktor-client-auth:$ktor_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'org.bundleproject.ApplicationKt'
+    }
+}
+
+shadowJar {
+    archiveClassifier.set('')
+    configurations = [project.configurations.compileClasspath]
+}
+
+build.dependsOn(tasks.shadowJar)
