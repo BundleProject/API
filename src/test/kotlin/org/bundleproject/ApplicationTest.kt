@@ -8,8 +8,8 @@ import kotlin.test.Test
 import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.bundleproject.json.responses.ModResponse
+import org.bundleproject.utils.AssetsCache.fetchAssets
 import org.bundleproject.utils.CannotFindTestModException
-import org.bundleproject.utils.fetchAssets
 
 class ApplicationTest {
     private val gson = Gson()

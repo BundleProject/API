@@ -15,7 +15,7 @@ object AssetsCache {
     private var lastUpdated: Date? = null
     private var cached: ModAssets? = null
 
-    private suspend fun fetchAssets(): ModAssets {
+    suspend fun fetchAssets(): ModAssets {
         val (
             latestCommitId
         ) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)
