@@ -18,6 +18,7 @@ repositories {
 
 dependencies {
     implementation 'guru.zoroark:ktor-rate-limit:0.0.2'
+    implementation 'com.github.zafarkhaja:java-semver:0.9.0'
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-apache:$ktor_version"
@@ -40,8 +41,6 @@ shadowJar {
     archiveClassifier.set('')
     configurations = [project.configurations.compileClasspath]
 }
-
-build.dependsOn(tasks.shadowJar)
 
 compileKotlin {
     kotlinOptions {

@@ -1,5 +1,6 @@
 package org.bundleproject.utils
 
+import com.github.zafarkhaja.semver.Version
 import io.ktor.application.*
 import io.ktor.client.request.*
 import java.util.*
@@ -67,6 +68,8 @@ suspend fun resolveUrl(modData: ModData): String {
 }
 
 suspend fun getModFromCall(call: ApplicationCall): ModData {
+    if (call.parameters["version"]!! == "latest") return getLatestModFromCall(call)
+
     val assets = AssetsCache.getAssets()
     val id = call.parameters["id"]!!
     val platform = call.parameters["platform"]!!
@@ -75,6 +78,30 @@ suspend fun getModFromCall(call: ApplicationCall): ModData {
     val mod = assets.mods[id]
     val modData =
         mod?.platforms?.get(platform)?.get(minecraftVersion)?.get(version)
+            ?: throw ModNotFoundException()
+    return ModData(
+        version = version,
+        source = modData.source,
+        ref = modData.ref,
+        name = id,
+        id = modData.id,
+        metadata = mod.metadata
+    )
+}
+
+suspend fun getLatestModFromCall(call: ApplicationCall): ModData {
+    val assets = AssetsCache.getAssets()
+    val id = call.parameters["id"]!!
+    val platform = call.parameters["platform"]!!
+    val minecraftVersion = call.parameters["minecraftVersion"]!!
+    val mod = assets.mods[id]
+    val (version, modData) =
+        mod?.platforms
+            ?.get(platform)
+            ?.get(minecraftVersion)
+            ?.entries
+            ?.sortedWith { o1, o2 -> Version.valueOf(o1.key).compareTo(Version.valueOf(o2.key)) }
+            ?.first()
             ?: throw ModNotFoundException()
     return ModData(
         version = version,

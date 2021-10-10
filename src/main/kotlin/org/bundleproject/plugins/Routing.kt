@@ -37,7 +37,11 @@ fun Application.configureRouting() {
                     HttpStatusCode.OK,
                     ModResponse(
                         data =
-                            ModResponseData(url = resolveUrl(modData), metadata = modData.metadata)
+                            ModResponseData(
+                                url = resolveUrl(modData),
+                                version = modData.version,
+                                metadata = modData.metadata,
+                            )
                     )
                 )
             }

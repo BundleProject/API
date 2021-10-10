@@ -24,7 +24,7 @@ paths:
       tags:
         - "Mods"
       summary: "Get data about a mod"
-      description: "Gets data about a mod from the respective API"
+      description: "Gets data about a mod from the respective API. You can also use 'latest' as mod version"
       operationId: "getMetadata"
       parameters:
        - in: "path"
@@ -102,8 +102,8 @@ paths:
                     example: false
                   error:
                     type: "string"
-                    example: "string"  
-                  
+                    example: "string"
+
   /mods/{id}/{platform}/{minecraftVersion}/{version}/download:
     get:
       tags:
