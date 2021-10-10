@@ -4,12 +4,12 @@ import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.utils.io.charsets.*
+import kotlin.test.Test
+import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.utils.AssetsCache
 import org.bundleproject.utils.CannotFindTestModException
-import kotlin.test.Test
-import kotlin.test.assertEquals
 
 class ApplicationTest {
     private val gson = Gson()

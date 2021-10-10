@@ -6,19 +6,17 @@ import io.ktor.http.*
 import io.ktor.http.content.*
 import io.ktor.response.*
 import io.ktor.routing.*
+import java.nio.file.Paths
 import kotlinx.coroutines.launch
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.json.responses.ModResponseData
 import org.bundleproject.utils.AssetsCache
 import org.bundleproject.utils.getModFromCall
 import org.bundleproject.utils.resolveUrl
-import java.nio.file.Paths
 
 fun Application.configureRouting() {
     // Preload assets in background
-    launch {
-        AssetsCache.getAssets()
-    }
+    launch { AssetsCache.getAssets() }
     // Configure routes
     routing {
         static("static") { resources("static") }
@@ -39,7 +37,7 @@ fun Application.configureRouting() {
                     HttpStatusCode.OK,
                     ModResponse(
                         data =
-                        ModResponseData(url = resolveUrl(modData), metadata = modData.metadata)
+                            ModResponseData(url = resolveUrl(modData), metadata = modData.metadata)
                     )
                 )
             }

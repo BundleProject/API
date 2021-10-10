@@ -2,7 +2,6 @@
  * Taken using MIT license from kord-extensions
  * https://github.com/Kord-Extensions/kord-extensions/blob/7ecf3dee053fdcf387a04a7a5c4320092160282e/kord-extensions/src/main/kotlin/com/kotlindiscord/kord/extensions/utils/_Environment.kt
  */
-
 @file:OptIn(ExperimentalPathApi::class)
 
 package org.bundleproject.utils
@@ -16,11 +15,11 @@ private var firstLoad: Boolean = true
 private val envMap: MutableMap<String, String> = mutableMapOf()
 
 /**
- * Returns the value of an environmental variable, loading from a `.env` file in the current working directory if
- * possible.
+ * Returns the value of an environmental variable, loading from a `.env` file in the current working
+ * directory if possible.
  *
- * This function caches the contents of the `.env` file the first time it's called - there's no way to parse the file
- * again later.
+ * This function caches the contents of the `.env` file the first time it's called - there's no way
+ * to parse the file again later.
  *
  * @param name Environmental variable to get the value for.
  * @return The value of the environmental variable, or `null` if it doesn't exist.
