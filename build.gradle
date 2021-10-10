@@ -19,7 +19,7 @@ repositories {
 String ktor_version = "1.6.4"
 
 dependencies {
-    implementation 'guru.zoroark:ktor-rate-limit:0.0.1'
+    implementation 'guru.zoroark:ktor-rate-limit:v0.0.2'
     implementation "io.ktor:ktor-server-core:$ktor_version"
     implementation "io.ktor:ktor-client-core:$ktor_version"
     implementation "io.ktor:ktor-client-apache:$ktor_version"
