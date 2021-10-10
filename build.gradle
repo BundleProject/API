@@ -1,7 +1,7 @@
 plugins {
     id 'org.jetbrains.kotlin.jvm' version '1.5.21'
     id 'com.github.johnrengelman.shadow' version '7.1.0'
-    id 'com.ncorti.ktfmt.gradle' version '0.6.0'
+    id 'com.ncorti.ktfmt.gradle' version '0.7.0'
 }
 
 ktfmt {
