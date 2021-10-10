@@ -2,7 +2,6 @@ package org.bundleproject.utils
 
 import io.ktor.application.*
 import io.ktor.client.request.*
-import java.util.*
 import org.bundleproject.json.ModData
 import org.bundleproject.json.assets.ModAssets
 import org.bundleproject.json.assets.ModSource
@@ -10,12 +9,13 @@ import org.bundleproject.json.github.GithubCommit
 import org.bundleproject.json.github.GithubReleases
 import org.bundleproject.json.modrinth.ModrinthMod
 import org.bundleproject.json.modrinth.ModrinthModVersions
+import java.util.*
 
 object AssetsCache {
     private var lastUpdated: Date? = null
     private var cached: ModAssets? = null
 
-    suspend fun fetchAssets(): ModAssets {
+    private suspend fun fetchAssets(): ModAssets {
         val (
             latestCommitId
         ) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)

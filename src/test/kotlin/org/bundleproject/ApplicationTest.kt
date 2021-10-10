@@ -4,18 +4,18 @@ import com.google.gson.Gson
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import io.ktor.utils.io.charsets.*
-import kotlin.test.Test
-import kotlin.test.assertEquals
 import kotlinx.coroutines.runBlocking
 import org.bundleproject.json.responses.ModResponse
-import org.bundleproject.utils.AssetsCache.fetchAssets
+import org.bundleproject.utils.AssetsCache
 import org.bundleproject.utils.CannotFindTestModException
+import kotlin.test.Test
+import kotlin.test.assertEquals
 
 class ApplicationTest {
     private val gson = Gson()
 
     private suspend fun getTestRoute(): String {
-        val assets = fetchAssets()
+        val assets = AssetsCache.getAssets()
         val id = assets.mods.keys.first()
         val asset = assets.mods[id]
         val platform = asset?.platforms?.keys?.first()
@@ -25,6 +25,7 @@ class ApplicationTest {
                 ?: throw CannotFindTestModException()
         return "/v1/mods/$id/$platform/$mcVer/$modVer"
     }
+
     @Test
     fun testMod() {
         withTestApplication({ configurePlugins() }) {
