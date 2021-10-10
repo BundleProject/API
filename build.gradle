@@ -16,7 +16,7 @@ repositories {
     maven { url "https://jitpack.io" }
 }
 
-String ktor_version = "1.6.3"
+String ktor_version = "1.6.4"
 
 dependencies {
     implementation 'guru.zoroark:ktor-rate-limit:0.0.1'
