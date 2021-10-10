@@ -13,7 +13,7 @@ info:
     name: "All Rights Reserved"
     url: "https://github.com/BundleProject/API/blob/main/LICENSE" 
 servers:
-  - url: "https://api.bundle.isxander.dev/v1"
+  - url: "https://api.bundleproject.org/v1"
     description: "Main server"
 tags:
   - name: "Mods"
