@@ -1,9 +1,9 @@
 package org.bundleproject.utils
 
-val port = System.getenv("PORT")?.toIntOrNull() ?: 8080
+val port = env("PORT")?.toIntOrNull() ?: 8080
 val githubAuth = listOf(
-    System.getenv("GITHUB_AUTH_USER") ?: throw IllegalArgumentException("No github username/clientid provided"),
-    System.getenv("GITHUB_AUTH_PASS") ?: throw IllegalArgumentException("No github password/secret provided")
+    env("GITHUB_AUTH_USER") ?: throw IllegalArgumentException("No github username/clientid provided"),
+    env("GITHUB_AUTH_PASS") ?: throw IllegalArgumentException("No github password/secret provided")
 )
 
 fun getAssetsUrl(ref: String) = "$assetsUrlPrefix$ref$assetsUrlSuffix"

@@ -42,3 +42,9 @@ shadowJar {
 }
 
 build.dependsOn(tasks.shadowJar)
+
+compileKotlin {
+    kotlinOptions {
+        freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
+    }
+}
