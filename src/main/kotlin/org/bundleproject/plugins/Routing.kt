@@ -4,14 +4,19 @@ import guru.zoroark.ratelimit.rateLimited
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
+import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import java.nio.file.Paths
+import java.util.*
 import kotlinx.coroutines.launch
+import org.bundleproject.json.request.ModRequest
+import org.bundleproject.json.responses.BulkModResponse
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.json.responses.ModResponseData
 import org.bundleproject.utils.AssetsCache
-import org.bundleproject.utils.getModFromCall
+import org.bundleproject.utils.getBulkMods
+import org.bundleproject.utils.getModFromRequest
 import org.bundleproject.utils.resolveUrl
 
 fun Application.configureRouting() {
@@ -32,7 +37,7 @@ fun Application.configureRouting() {
         }
         rateLimited {
             get("/v1/mods/{id}/{platform}/{minecraftVersion}/{version}") {
-                val modData = getModFromCall(call)
+                val modData = getModFromRequest(ModRequest(call))
                 call.respond(
                     HttpStatusCode.OK,
                     ModResponse(
@@ -46,8 +51,11 @@ fun Application.configureRouting() {
                 )
             }
             get("/v1/mods/{id}/{platform}/{minecraftVersion}/{version}/download") {
-                val modData = getModFromCall(call)
+                val modData = getModFromRequest(ModRequest(call))
                 call.respondRedirect(permanent = true, url = resolveUrl(modData))
+            }
+            get("/v1/mods/bulk/{bulk}") {
+                call.respond(HttpStatusCode.OK, BulkModResponse(mods = getBulkMods(call)))
             }
         }
     }

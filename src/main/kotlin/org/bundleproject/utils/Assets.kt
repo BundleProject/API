@@ -1,8 +1,12 @@
 package org.bundleproject.utils
 
 import com.github.zafarkhaja.semver.Version
+import com.google.gson.Gson
+import com.google.gson.JsonParser
 import io.ktor.application.*
 import io.ktor.client.request.*
+import io.ktor.http.*
+import io.ktor.response.*
 import java.util.*
 import org.bundleproject.json.ModData
 import org.bundleproject.json.assets.ModAssets
@@ -11,6 +15,9 @@ import org.bundleproject.json.github.GithubCommit
 import org.bundleproject.json.github.GithubReleases
 import org.bundleproject.json.modrinth.ModrinthMod
 import org.bundleproject.json.modrinth.ModrinthModVersions
+import org.bundleproject.json.request.ModRequest
+import org.bundleproject.json.responses.ErrorResponse
+import org.bundleproject.json.responses.ModResponseData
 
 object AssetsCache {
     private var lastUpdated: Date? = null
@@ -67,14 +74,14 @@ suspend fun resolveUrl(modData: ModData): String {
     }
 }
 
-suspend fun getModFromCall(call: ApplicationCall): ModData {
-    if (call.parameters["version"]!! == "latest") return getLatestModFromCall(call)
+suspend fun getModFromRequest(request: ModRequest): ModData {
+    if (request.version == "latest") return getLatestModFromRequest(request)
 
     val assets = AssetsCache.getAssets()
-    val id = call.parameters["id"]!!
-    val platform = call.parameters["platform"]!!
-    val minecraftVersion = call.parameters["minecraftVersion"]!!
-    val version = call.parameters["version"]!!
+    val id = request.id
+    val platform = request.platform
+    val minecraftVersion = request.minecraftVersion
+    val version = request.version
     val mod = assets.mods[id]
     val modData =
         mod?.platforms?.get(platform)?.get(minecraftVersion)?.get(version)
@@ -89,11 +96,11 @@ suspend fun getModFromCall(call: ApplicationCall): ModData {
     )
 }
 
-suspend fun getLatestModFromCall(call: ApplicationCall): ModData {
+suspend fun getLatestModFromRequest(request: ModRequest): ModData {
     val assets = AssetsCache.getAssets()
-    val id = call.parameters["id"]!!
-    val platform = call.parameters["platform"]!!
-    val minecraftVersion = call.parameters["minecraftVersion"]!!
+    val id = request.id
+    val platform = request.platform
+    val minecraftVersion = request.minecraftVersion
     val mod = assets.mods[id]
     val (version, modData) =
         mod?.platforms
@@ -111,4 +118,26 @@ suspend fun getLatestModFromCall(call: ApplicationCall): ModData {
         id = modData.id,
         metadata = mod.metadata
     )
+}
+
+suspend fun getBulkMods(call: ApplicationCall): List<ModResponseData> {
+    val bulk = call.parameters["bulk"]
+    if (bulk == null)
+        call.respond(HttpStatusCode.BadRequest, ErrorResponse(error = "please specify bulk"))
+
+    val mods = mutableListOf<ModResponseData>()
+    for (element in
+        JsonParser.parseString(Base64.getDecoder().decode(bulk).decodeToString()).asJsonArray) {
+        val request = Gson().fromJson(element, ModRequest::class.java)
+        val modData = getModFromRequest(request)
+        mods.add(
+            ModResponseData(
+                url = resolveUrl(modData),
+                version = modData.version,
+                metadata = modData.metadata,
+            )
+        )
+    }
+
+    return mods
 }
