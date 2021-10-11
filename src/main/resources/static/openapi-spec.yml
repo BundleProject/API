@@ -170,3 +170,49 @@ paths:
                   error:
                     type: "string"
                     example: "string"
+
+  /mods/bulk/{bulk}:
+    get:
+      tags:
+        - Mods
+      summary: Bulk Mod Request
+      description: Get multiple mod data entries from one request
+      operationId: getBulkMetadata
+      parameters:
+        - in: "path"
+          name: "bulk"
+          required: true
+          schema:
+            type: "string"
+          description: 'Base64 json request in the form of [{id, platform, minecraftVersion, version}]'
+      responses:
+        "200":
+          description: "OK"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  - type: "object"
+                    properties:
+                      success:
+                        type: "boolean"
+                        example: true
+                      data:
+                        type: "object"
+                        properties:
+                          url:
+                            type: "string"
+                            example: "string"
+                          metadata:
+                            type: "object"
+                            properties:
+                              display:
+                                type: "string"
+                                example: "string"
+                              creator:
+                                type: "string"
+                                example: "string"
+        "400":
+          description: "Bad Request"
+
