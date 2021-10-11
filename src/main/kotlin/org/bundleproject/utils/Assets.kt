@@ -107,7 +107,7 @@ suspend fun getLatestModFromRequest(request: ModRequest): ModData {
             ?.get(platform)
             ?.get(minecraftVersion)
             ?.entries
-            ?.sortedWith { o1, o2 -> Version.valueOf(o1.key).compareTo(Version.valueOf(o2.key)) }
+            ?.sortedWith { o1, o2 -> Version.valueOf(o2.key).compareTo(Version.valueOf(o1.key)) }
             ?.first()
             ?: throw ModNotFoundException()
     return ModData(

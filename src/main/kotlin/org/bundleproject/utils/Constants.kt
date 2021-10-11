@@ -11,7 +11,7 @@ val githubAuth =
 
 fun getAssetsUrl(ref: String) = "$assetsUrlPrefix$ref$assetsUrlSuffix"
 
-private const val assetsUrlPrefix = "https://cdn.jsdelivr.net/gh/TymanWasTaken/Assets@"
+private const val assetsUrlPrefix = "https://cdn.jsdelivr.net/gh/BundleProject/Assets@"
 private const val assetsUrlSuffix = "/assets/mods.json"
 const val githubApiUrl = "https://api.github.com"
 const val assetsLatestCommitUrl = "$githubApiUrl/repos/BundleProject/Assets/commits/main"
