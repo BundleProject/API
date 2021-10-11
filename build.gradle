@@ -27,6 +27,17 @@ dependencies {
     implementation "io.ktor:ktor-client-auth:$ktor_version"
     implementation "io.ktor:ktor-server-netty:$ktor_version"
     implementation "ch.qos.logback:logback-classic:$logback_version"
+
+    testImplementation 'guru.zoroark:ktor-rate-limit:0.0.2'
+    testImplementation 'com.github.zafarkhaja:java-semver:0.9.0'
+    testImplementation "io.ktor:ktor-server-core:$ktor_version"
+    testImplementation "io.ktor:ktor-client-core:$ktor_version"
+    testImplementation "io.ktor:ktor-client-apache:$ktor_version"
+    testImplementation "io.ktor:ktor-gson:$ktor_version"
+    testImplementation "io.ktor:ktor-client-gson:$ktor_version"
+    testImplementation "io.ktor:ktor-client-auth:$ktor_version"
+    testImplementation "io.ktor:ktor-server-netty:$ktor_version"
+    testImplementation "ch.qos.logback:logback-classic:$logback_version"
     testImplementation "io.ktor:ktor-server-tests:$ktor_version"
     testImplementation "org.jetbrains.kotlin:kotlin-test:$kotlin_version"
 }
@@ -44,6 +55,7 @@ shadowJar {
 
 compileKotlin {
     kotlinOptions {
+        jvmTarget = "16"
         freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
     }
 }
