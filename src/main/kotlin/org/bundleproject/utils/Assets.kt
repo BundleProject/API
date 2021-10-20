@@ -4,6 +4,7 @@ import com.github.zafarkhaja.semver.Version
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.ktor.application.*
+import io.ktor.client.features.*
 import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.response.*
@@ -45,6 +46,10 @@ object AssetsCache {
             this.cached!!
         }
     }
+
+    suspend fun invalidateCache() {
+        cached = null
+    }
 }
 
 suspend fun resolveUrl(modData: ModData): String {
@@ -52,7 +57,13 @@ suspend fun resolveUrl(modData: ModData): String {
         ModSource.DIRECT -> modData.ref
         ModSource.GITHUB -> {
             val releases: GithubReleases =
-                httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
+                try {
+                    httpClient.get("$githubApiUrl/repos/${modData.ref}/releases")
+                } catch (e: ClientRequestException) {
+                    e.printStackTrace()
+                    throw ModDownloadNotAvailableException()
+                }
+
             releases
                 .find { it.tagName == modData.version || it.tagName == "v${modData.version}" }
                 ?.assets
@@ -61,13 +72,22 @@ suspend fun resolveUrl(modData: ModData): String {
                 ?: throw ModNotFoundException()
         }
         ModSource.MODRINTH -> {
-            var id = modData.id
-            if (id == null) {
-                val mod: ModrinthMod = httpClient.get("$modrinthApiUrl/mod/${modData.name}")
-                id = mod.id
-            }
+            val id =
+                try {
+                    httpClient.get<ModrinthMod>("$modrinthApiUrl/mod/${modData.ref}").id
+                } catch (e: ClientRequestException) {
+                    e.printStackTrace()
+                    throw ModDownloadNotAvailableException()
+                }
+
             val modVersions: ModrinthModVersions =
-                httpClient.get("$modrinthApiUrl/mod/${id}/version")
+                try {
+                    httpClient.get("$modrinthApiUrl/mod/$id/version")
+                } catch (e: ClientRequestException) {
+                    e.printStackTrace()
+                    throw ModDownloadNotAvailableException()
+                }
+
             modVersions.find { it.versionNumber == modData.version }?.files?.getOrNull(0)?.url
                 ?: throw ModNotFoundException()
         }
