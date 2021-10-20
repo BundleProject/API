@@ -1,7 +1,7 @@
 name: Docker Image CI
 
 on:
-  workflow_dispatch:
+  push:
 
 jobs:
   build:
@@ -21,16 +21,16 @@ jobs:
           key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
           restore-keys: |
             ${{ runner.os }}-gradle-
-      - name: Build Metadata-API
+      - name: Build Bundle-API
         run: |
           chmod +x ./gradlew
           ./gradlew distTar
           mkdir actions
           cp ./build/distributions/Bundle-API-*.tar ./actions/Bundle-API.tar
-      - name: Build and push Docker images (latest)
+      - name: Build and push Docker images
         uses: mr-smithers-excellent/docker-build-push@v4
         with:
-          image: bundle_api/bundle_api
+          image: api/bundle
           tag: ${{ steps.vars.outputs.sha_short }}
           dockerfile: Dockerfile
           registry: docker.pkg.github.com
