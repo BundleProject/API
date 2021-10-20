@@ -1,0 +1,38 @@
+name: Docker Image CI
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Set up JDK 17
+        uses: actions/setup-java@v2
+        with:
+          java-version: '17'
+          distribution: 'adopt'
+      - uses: actions/cache@v2
+        with:
+          path: |
+            ~/.gradle/caches
+            ~/.gradle/wrapper
+          key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
+          restore-keys: |
+            ${{ runner.os }}-gradle-
+      - name: Build Metadata-API
+        run: |
+          chmod +x ./gradlew
+          ./gradlew distTar
+          mkdir actions
+          cp ./build/distributions/Bundle-API-*.tar ./actions/Bundle-API.tar
+      - name: Build and push Docker images (latest)
+        uses: mr-smithers-excellent/docker-build-push@v4
+        with:
+          image: bundle_api/bundle_api
+          tag: ${{ steps.vars.outputs.sha_short }}
+          dockerfile: Dockerfile
+          registry: docker.pkg.github.com
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_TOKEN }}
