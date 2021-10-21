@@ -8,16 +8,12 @@ import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import java.nio.file.Paths
-import java.util.*
 import kotlinx.coroutines.launch
 import org.bundleproject.json.request.ModRequest
 import org.bundleproject.json.responses.BulkModResponse
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.json.responses.ModResponseData
-import org.bundleproject.utils.AssetsCache
-import org.bundleproject.utils.getBulkMods
-import org.bundleproject.utils.getModFromRequest
-import org.bundleproject.utils.resolveUrl
+import org.bundleproject.utils.*
 
 fun Application.configureRouting() {
     // Preload assets in background
@@ -56,6 +52,19 @@ fun Application.configureRouting() {
             }
             get("/v1/mods/bulk/{bulk}") {
                 call.respond(HttpStatusCode.OK, BulkModResponse(mods = getBulkMods(call)))
+            }
+
+            post("/v1/internal/invalidate-cache") {
+                if (authentication == null) throw IllegalStateException()
+
+                val params = call.receiveParameters()
+                val auth = params["password"] ?: throw NoAuthenticationException()
+                if (auth != authentication) {
+                    call.respond(HttpStatusCode.Forbidden)
+                } else {
+                    AssetsCache.invalidateCache()
+                    call.respond(HttpStatusCode.OK)
+                }
             }
         }
     }
