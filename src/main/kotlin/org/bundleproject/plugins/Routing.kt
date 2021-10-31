@@ -4,7 +4,6 @@ import guru.zoroark.ratelimit.rateLimited
 import io.ktor.application.*
 import io.ktor.http.*
 import io.ktor.http.content.*
-import io.ktor.request.*
 import io.ktor.response.*
 import io.ktor.routing.*
 import java.nio.file.Paths
@@ -13,11 +12,15 @@ import org.bundleproject.json.request.ModRequest
 import org.bundleproject.json.responses.BulkModResponse
 import org.bundleproject.json.responses.ModResponse
 import org.bundleproject.json.responses.ModResponseData
-import org.bundleproject.utils.*
+import org.bundleproject.json.responses.VersionResponse
+import org.bundleproject.utils.AssetsCache
+import org.bundleproject.utils.getBulkMods
+import org.bundleproject.utils.getModFromRequest
+import org.bundleproject.utils.resolveUrl
 
 fun Application.configureRouting() {
     // Preload assets in background
-    launch { AssetsCache.getAssets() }
+    launch { AssetsCache.modAssets }
     // Configure routes
     routing {
         static("static") { resources("static") }
@@ -54,17 +57,8 @@ fun Application.configureRouting() {
                 call.respond(HttpStatusCode.OK, BulkModResponse(mods = getBulkMods(call)))
             }
 
-            post("/v1/internal/invalidate-cache") {
-                if (authentication == null) throw IllegalStateException()
-
-                val params = call.receiveParameters()
-                val auth = params["password"] ?: throw NoAuthenticationException()
-                if (auth != authentication) {
-                    call.respond(HttpStatusCode.Forbidden)
-                } else {
-                    AssetsCache.invalidateCache()
-                    call.respond(HttpStatusCode.OK)
-                }
+            get("/v1/bundle/version") {
+                call.respond(HttpStatusCode.OK, VersionResponse(data = AssetsCache.versionAssets))
             }
         }
     }

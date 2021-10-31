@@ -15,7 +15,7 @@ class ApplicationTest {
     private val gson = Gson()
 
     private suspend fun getTestRoute(latest: Boolean = false): String {
-        val assets = AssetsCache.getAssets()
+        val assets = AssetsCache.modAssets
         val id = assets.mods.keys.first()
         val asset = assets.mods[id]
         val platform = asset?.platforms?.keys?.first()

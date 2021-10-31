@@ -9,9 +9,11 @@ import io.ktor.client.request.*
 import io.ktor.http.*
 import io.ktor.response.*
 import java.util.*
+import java.util.concurrent.TimeUnit
 import org.bundleproject.json.ModData
 import org.bundleproject.json.assets.ModAssets
 import org.bundleproject.json.assets.ModSource
+import org.bundleproject.json.assets.VersionAssets
 import org.bundleproject.json.github.GithubCommit
 import org.bundleproject.json.github.GithubReleases
 import org.bundleproject.json.modrinth.ModrinthMod
@@ -21,35 +23,16 @@ import org.bundleproject.json.responses.ErrorResponse
 import org.bundleproject.json.responses.ModResponseData
 
 object AssetsCache {
-    private var lastUpdated: Date? = null
-    private var cached: ModAssets? = null
-
-    private suspend fun fetchAssets(): ModAssets {
-        val (latestCommitId) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)
-        return httpClient.get(getAssetsUrl(latestCommitId))
-    }
-
-    suspend fun getAssets(): ModAssets {
-        // Save to local variables for null safety
-        val cached = cached
-        val lastUpdated = lastUpdated
-        if (cached == null || lastUpdated == null) {
-            val fetched = fetchAssets()
-            this.cached = fetched
-            this.lastUpdated = Date()
-            return fetched
+    val modAssets by
+        Cache<ModAssets>(TimeUnit.MINUTES.toMillis(5)) {
+            val (latestCommitId) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)
+            httpClient.get(getAssetsUrl(latestCommitId, "mods.json"))
         }
-        return if (Date().time - lastUpdated.time >= 5 * 60 * 1000) {
-            this.cached = fetchAssets()
-            this.cached!!
-        } else {
-            this.cached!!
+    val versionAssets by
+        Cache<VersionAssets>(TimeUnit.MINUTES.toMillis(5)) {
+            val (latestCommitId) = httpClient.get<GithubCommit>(assetsLatestCommitUrl)
+            httpClient.get(getAssetsUrl(latestCommitId, "versions.json"))
         }
-    }
-
-    suspend fun invalidateCache() {
-        cached = null
-    }
 }
 
 suspend fun resolveUrl(modData: ModData): String {
@@ -97,7 +80,7 @@ suspend fun resolveUrl(modData: ModData): String {
 suspend fun getModFromRequest(request: ModRequest): ModData {
     if (request.version == "latest") return getLatestModFromRequest(request)
 
-    val assets = AssetsCache.getAssets()
+    val assets = AssetsCache.modAssets
     val id = request.id
     val platform = request.platform
     val minecraftVersion = request.minecraftVersion
@@ -117,7 +100,7 @@ suspend fun getModFromRequest(request: ModRequest): ModData {
 }
 
 suspend fun getLatestModFromRequest(request: ModRequest): ModData {
-    val assets = AssetsCache.getAssets()
+    val assets = AssetsCache.modAssets
     val id = request.id
     val platform = request.platform
     val minecraftVersion = request.minecraftVersion

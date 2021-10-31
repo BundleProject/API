@@ -6,12 +6,10 @@ val githubAuth =
         env("GITHUB_AUTH_USER") ?: error("No github username/clientid provided"),
         env("GITHUB_AUTH_PASS") ?: error("No github password/secret provided")
     )
-val authentication = env("INTERNAL_AUTH")
 
-fun getAssetsUrl(ref: String) = "$assetsUrlPrefix$ref$assetsUrlSuffix"
+fun getAssetsUrl(version: String, path: String) = "$jsDelivrUrl$version/assets/$path"
 
-private const val assetsUrlPrefix = "https://cdn.jsdelivr.net/gh/BundleProject/Assets@"
-private const val assetsUrlSuffix = "/assets/mods.json"
+private const val jsDelivrUrl = "https://cdn.jsdelivr.net/gh/BundleProject/Assets@"
 const val githubApiUrl = "https://api.github.com"
 const val assetsLatestCommitUrl = "$githubApiUrl/repos/BundleProject/Assets/commits/main"
 const val modrinthApiUrl = "https://api.modrinth.com/api/v1"
