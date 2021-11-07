@@ -8,8 +8,8 @@ ktfmt {
     kotlinLangStyle()
 }
 
-group = "org.bundleproject"
-version = "0.0.1"
+group = "org.bundleproject.api"
+version = "0.1.0"
 
 repositories {
     mavenCentral()
@@ -37,7 +37,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("org.bundleproject.ApplicationKt")
+    mainClass.set("org.bundleproject.api.ApplicationKt")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
