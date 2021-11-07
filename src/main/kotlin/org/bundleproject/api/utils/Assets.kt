@@ -35,7 +35,8 @@ object AssetsCache {
                 httpClient
                     .get<GithubReleases>("$githubApiUrl/repos/$githubProject/releases")
                     .firstOrNull()
-                    ?.tagName ?: "unknown"
+                    ?.tagName
+                    ?: "unknown"
             }
 
             VersionAsset(
