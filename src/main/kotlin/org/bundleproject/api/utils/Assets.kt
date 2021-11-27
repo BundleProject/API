@@ -15,6 +15,7 @@ import org.bundleproject.api.json.ModData
 import org.bundleproject.api.json.assets.ModAssets
 import org.bundleproject.api.json.assets.ModSource
 import org.bundleproject.api.json.assets.VersionAsset
+import org.bundleproject.api.json.assets.VersionAssets
 import org.bundleproject.api.json.github.GithubCommit
 import org.bundleproject.api.json.github.GithubReleases
 import org.bundleproject.api.json.modrinth.ModrinthMod
@@ -32,17 +33,32 @@ object AssetsCache {
     val versionAssets by
         Cache(TimeUnit.MINUTES.toMillis(5)) {
             fun getLatest(githubProject: String) = runBlocking {
-                httpClient
-                    .get<GithubReleases>("$githubApiUrl/repos/$githubProject/releases")
-                    .firstOrNull()
-                    ?.tagName
-                    ?: "unknown"
+                val releases =
+                    httpClient.get<GithubReleases>("$githubApiUrl/repos/$githubProject/releases")
+
+                Pair(
+                    releases.firstOrNull { !it.prerelease }?.tagName ?: "unknown",
+                    releases.firstOrNull { it.prerelease }?.tagName ?: "unknown",
+                )
             }
 
-            VersionAsset(
-                updater = getLatest("BundleProject/Bundle"),
-                launchWrapper = getLatest("BundleProject/Launchwrapper"),
-                installer = getLatest("BundleProject/Installer"),
+            val updater = getLatest("BundleProject/Bundle")
+            val launchWrapper = getLatest("BundleProject/Launchwrapper")
+            val installer = getLatest("BundleProject/Installer")
+
+            VersionAssets(
+                release =
+                    VersionAsset(
+                        updater = updater.first,
+                        launchWrapper = launchWrapper.first,
+                        installer = installer.first,
+                    ),
+                prerelease =
+                    VersionAsset(
+                        updater = updater.second,
+                        launchWrapper = launchWrapper.second,
+                        installer = installer.second,
+                    )
             )
         }
 }
