@@ -1,6 +1,5 @@
 package org.bundleproject.api.utils
 
-import com.github.zafarkhaja.semver.Version
 import com.google.gson.Gson
 import com.google.gson.JsonParser
 import io.ktor.application.*
@@ -23,6 +22,7 @@ import org.bundleproject.api.json.modrinth.ModrinthModVersions
 import org.bundleproject.api.json.request.ModRequest
 import org.bundleproject.api.json.responses.ErrorResponse
 import org.bundleproject.api.json.responses.ModResponseData
+import org.bundleproject.libversion.Version
 
 object AssetsCache {
     val modAssets by
@@ -138,7 +138,7 @@ suspend fun getLatestModFromRequest(request: ModRequest): ModData {
             ?.get(platform)
             ?.get(minecraftVersion)
             ?.entries
-            ?.sortedWith { o1, o2 -> Version.valueOf(o2.key).compareTo(Version.valueOf(o1.key)) }
+            ?.sortedWith { o1, o2 -> Version.of(o2.key).compareTo(Version.of(o1.key)) }
             ?.first()
             ?: throw ModNotFoundException()
     return ModData(

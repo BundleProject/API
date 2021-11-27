@@ -2,11 +2,8 @@
  * Taken using MIT license from kord-extensions
  * https://github.com/Kord-Extensions/kord-extensions/blob/7ecf3dee053fdcf387a04a7a5c4320092160282e/kord-extensions/src/main/kotlin/com/kotlindiscord/kord/extensions/utils/_Environment.kt
  */
-@file:OptIn(ExperimentalPathApi::class)
-
 package org.bundleproject.api.utils
 
-import kotlin.io.path.ExperimentalPathApi
 import kotlin.io.path.Path
 import kotlin.io.path.isRegularFile
 import kotlin.io.path.readLines

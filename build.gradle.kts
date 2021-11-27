@@ -22,7 +22,6 @@ dependencies {
     val logbackVersion: String by project
 
     implementation("guru.zoroark:ktor-rate-limit:0.0.2")
-    implementation("com.github.zafarkhaja:java-semver:0.9.0")
     implementation("io.ktor:ktor-server-core:$ktorVersion")
     implementation("io.ktor:ktor-client-core:$ktorVersion")
     implementation("io.ktor:ktor-client-apache:$ktorVersion")
@@ -31,6 +30,7 @@ dependencies {
     implementation("io.ktor:ktor-client-auth:$ktorVersion")
     implementation("io.ktor:ktor-server-netty:$ktorVersion")
     implementation("ch.qos.logback:logback-classic:$logbackVersion")
+    implementation("org.bundleproject:libversion:0.0.2")
 
     testImplementation("io.ktor:ktor-server-tests:$ktorVersion")
     testImplementation("org.jetbrains.kotlin:kotlin-test:$kotlinVersion")
