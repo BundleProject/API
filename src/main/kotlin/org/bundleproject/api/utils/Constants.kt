@@ -3,8 +3,8 @@ package org.bundleproject.api.utils
 val port = env("PORT")?.toIntOrNull() ?: 8080
 val githubAuth =
     listOf(
-        env("GITHUB_AUTH_USER") ?: error("No github username/clientid provided"),
-        env("GITHUB_AUTH_PASS") ?: error("No github password/secret provided")
+        env("GITHUB_AUTH_USER") ?: error("Please specify GITHUB_AUTH_USER environment variable."),
+        env("GITHUB_AUTH_PASS") ?: error("Please specify GITHUB_AUTH_PASS environment variable.")
     )
 
 fun getAssetsUrl(version: String, path: String) = "$jsDelivrUrl$version/assets/$path"

@@ -22,5 +22,13 @@ fun Application.configureStatusPages() {
                 ErrorResponse(error = "Could not find mod download")
             )
         }
+        exception<Exception> {
+            call.respond(
+                HttpStatusCode.InternalServerError,
+                ErrorResponse(
+                    error = "${it.javaClass.name}: ${it.message ?: "no error message provided"}"
+                )
+            )
+        }
     }
 }
