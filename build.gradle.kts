@@ -1,7 +1,7 @@
 plugins {
     kotlin("jvm") version "1.6.0"
     application
-    id("com.ncorti.ktfmt.gradle") version "0.7.0"
+    id("com.ncorti.ktfmt.gradle") version "0.10.0"
 }
 
 ktfmt {
